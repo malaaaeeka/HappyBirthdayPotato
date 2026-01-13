@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Every Birthday, Every Luna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+    body{
+        background-color: #86465e;
+    }
+
+     .star {
+        position: fixed;
+        opacity: 0;
+        transition: opacity 2s ease-in;
+        z-index: 1;
+    }
+
+    .star::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+        border-radius: 50%;
+    }
+
+    .star::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #fff, transparent);
+        transform: rotate(45deg);
+        filter: blur(1px);
+    }
+
+    .star-twinkle {
+        animation: twinkle var(--twinkle-duration) infinite alternate ease-in-out;
+    }
+
+    @keyframes twinkle {
+        0% {
+            transform: scale(0.8);
+            filter: blur(1px) brightness(0.8);
+        }
+        50% {
+            transform: scale(1.2);
+            filter: blur(0.5px) brightness(1.2);
+        }
+        100% {
+            transform: scale(1);
+            filter: blur(0.8px) brightness(1);
+        }
+    }
+
+    .shooting-star {
+        position: fixed;
+        width: 2px;
+        height: 2px;
+        opacity: 0;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0.8), 
+            rgba(255,255,255,0.4) 20%,
+            transparent 100%);
+        filter: blur(0.5px);
+        transform: rotate(45deg);
+        z-index: 1;
+    }
+
+    @keyframes shoot {
+        0% {
+            transform: translateX(0) translateY(0) rotate(45deg) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(-100vw) translateY(100vh) rotate(45deg) scale(0.2);
+            opacity: 0;
+        }
+    }
+    
+    .image-gallery{
+        width: 80%;
+        margin: 100px auto 50px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); 
+        grid-gap: 30px;
+        border-radius: 15px;
+    }
+  .image-gallery img{
+    width: 100%;  
+    height: auto; 
+    display: block;
+    box-shadow: 0 32px 95px rgba(83, 83, 84, 0.2);
+    border-radius: 15px;
+    transition: all 0.5s ease;
+}
+
+.image-gallery img:hover{
+    transform: scale(1.05);
+    border-radius: 20px;
+    box-shadow: 0 32px 95px #d79eb3;
+}
+.image-gallery a {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.image-gallery img {
+    transition: all 0.5s ease;
+}
+
+.image-gallery a:hover img {
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><circle cx="150" cy="150" r="140" fill="%23FFD700"/><circle cx="170" cy="130" r="20" fill="%23DAA520"/><circle cx="120" cy="160" r="15" fill="%23DAA520"/><circle cx="160" cy="180" r="25" fill="%23DAA520"/></svg>');
+    transform: scale(1.05);
+    border-radius: 20px;
+    box-shadow: 0 32px 95px #d79eb3;
+}
+h1{
+    text-align: center;
+    color: rgb(169, 171, 172);
+    margin-top: 50px;
+    margin-bottom: 30px;
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 55px;
+}
+
+/* Tablet View (iPad, tablets) */
+@media screen and (max-width: 1024px) {
+    .image-gallery {
+        grid-template-columns: repeat(3, 1fr);
+        width: 85%;
+        grid-gap: 20px;
+    }
+    
+    h1 {
+        font-size: 45px;
+        margin-top: 40px;
+    }
+}
+
+/* Mobile View (phones) - 3 IMAGES PER ROW */
+@media screen and (max-width: 768px) {
+    .image-gallery {
+        grid-template-columns: repeat(3, 1fr);
+        width: 95%;
+        grid-gap: 12px;
+        margin: 60px auto 30px;
+    }
+    
+    h1 {
+        font-size: 35px;
+        margin-top: 30px;
+        padding: 0 15px;
+    }
+    
+    .image-gallery img:hover {
+        transform: scale(1.02);
+    }
+}
+
+/* Small Mobile View (very small phones) - 2 IMAGES PER ROW */
+@media screen and (max-width: 480px) {
+    .image-gallery {
+        grid-template-columns: repeat(2, 1fr);
+        width: 95%;
+        grid-gap: 12px;
+        margin: 50px auto 20px;
+    }
+    
+    h1 {
+        font-size: 28px;
+        margin-top: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .image-gallery img:hover {
+        transform: scale(1.02);
+    }
+}
+</style>
+
+<h1>Your Birthday Moons Through the Years</h1>
+<body>
+    <div class="image-gallery">
+        
+        <img src="1-hover.png" data-hover="1.png" alt="2004">
+       <img src="2-hover.png" data-hover="2.png" alt="2005">
+       <img src="3-hover.png" data-hover="3.png" alt="2006">
+       <img src="4-hover.png" data-hover="4.png" alt="2007">
+       <img src="5-hover.png" data-hover="5.png" alt="2008">
+       <img src="6-hover.png" data-hover="6.png" alt="2009">
+       <img src="7-hover.png" data-hover="7.png" alt="2010">
+       <img src="8-hover.png" data-hover="8.png" alt="2011">
+       <img src="9-hover.png" data-hover="9.png" alt="2012">
+       <img src="10-hover.png" data-hover="10.png" alt="2012">
+       <img src="11-hover.png" data-hover="11.png" alt="2013">
+       <img src="12-hover.png" data-hover="12.png" alt="2014">
+       <img src="13-hover.png" data-hover="13.png" alt="2015">
+       <img src="14-hover.png" data-hover="14.png" alt="2016">
+       <img src="15-hover.png" data-hover="15.png" alt="2017">
+       <img src="16-hover.png" data-hover="16.png" alt="2018">
+       <img src="17-hover.png" data-hover="17.png" alt="2019">
+       <img src="18-hover.png" data-hover="18.png" alt="2020">
+       <img src="19-hover.png" data-hover="19.png" alt="2021">
+       <img src="20-hover.png" data-hover="20.png" alt="2022">
+       <img src="21-hover.png" data-hover="21.png" alt="2023">
+       <img src="22-hover.png" data-hover="22.png" alt="2024">
+       <img src="23-hover.png" data-hover="13.png" alt="2025">
+       <img src="24-hover.png" data-hover="14.png" alt="2026">
+       <img src="25-hover.png" data-hover="25.png" alt="2023">
+       <img src="26-hover.png" data-hover="26.png" alt="2022">
+       <img src="27-hover.png" data-hover="27.png" alt="2024">
+    </div>
+
+    
+    <script>
+        // Preload all hover images
+        window.addEventListener('load', () => {
+            const images = document.querySelectorAll('.image-gallery img');
+            images.forEach(img => {
+                const hoverSrc = img.getAttribute('data-hover');
+                if (hoverSrc) {
+                    const preloadImg = new Image();
+                    preloadImg.src = hoverSrc;
+                }
+            });
+            setTimeout(createStars, 1000);
+        });
+
+        function createStars() {
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'star star-twinkle';
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.top = Math.random() * 100 + 'vh';
+                    star.style.setProperty('--twinkle-duration', 2 + Math.random() * 3 + 's');
+                    document.body.appendChild(star);
+                    
+                    requestAnimationFrame(() => {
+                        star.style.opacity = 0.6 + Math.random() * 0.4;
+                    });
+                }, i * 15);
+            }
+
+            setTimeout(startShootingStars, 3000);
+        }
+
+        function createShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.top = Math.random() * window.innerHeight/2 + 'px';
+            star.style.right = '0';
+            star.style.animation = 'shoot 2s linear forwards';
+            document.body.appendChild(star);
+
+            star.addEventListener('animationend', () => {
+                star.remove();
+            });
+        }
+
+        function startShootingStars() {
+            setInterval(createShootingStar, 6000);
+        }
+
+        let starsCreated = false;
+        window.addEventListener('scroll', () => {
+            if (!starsCreated && window.scrollY > 100) {
+                createMoreStars();
+                starsCreated = true;
+            }
+        });
+
+        function createMoreStars() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'star star-twinkle';
+                    const size = Math.random() * 2 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.top = (Math.random() * document.body.scrollHeight) + 'px';
+                    star.style.setProperty('--twinkle-duration', 2 + Math.random() * 4 + 's');
+                    document.body.appendChild(star);
+                    
+                    requestAnimationFrame(() => {
+                        star.style.opacity = 0.4 + Math.random() * 0.3;
+                    });
+                }, i * 10);
+            }
+        }
+        
+        document.querySelectorAll('.image-gallery img').forEach(img => {
+            const originalSrc = img.src;
+            const hoverSrc = img.getAttribute('data-hover');
+            
+            if (hoverSrc) {
+                img.addEventListener('mouseenter', () => {
+                    img.src = hoverSrc;
+                });
+                
+                img.addEventListener('mouseleave', () => {
+                    img.src = originalSrc;
+                });
+            }
+        });
+
+        setTimeout(() => {
+            window.location.href = 'birthday.html';
+        }, 15000);
+    </script>
+</body>
+</html>

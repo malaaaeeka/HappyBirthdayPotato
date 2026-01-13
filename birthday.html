@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #86465e;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Starry Background */
+        .star {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite alternate;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Drawing Page */
+        #drawingPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        #drawingCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .instructions {
+            position: fixed;
+            bottom: clamp(20px, 5vh, 50px);
+            left: 0;
+            right: 0;
+            color: #fff;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            text-align: center;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 2s ease-in, transform 1s ease-out;
+            transition-delay: 4s;
+            width: 100%;
+            padding: 0 20px;
+            line-height: 1.4;
+        }
+
+        .instructions.show {
+            opacity: 0.8;
+            transform: translateY(0);
+        }
+
+        .control-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn.done-btn {
+            background: rgba(72, 187, 120, 0.3);
+            border-color: #48bb78;
+        }
+
+        .btn.done-btn:hover {
+            background: rgba(72, 187, 120, 0.5);
+        }
+
+        /* Message Page */
+        #messagePage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #86465e;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #messagePage.show {
+            display: flex;
+        }
+
+        #messageContent {
+            max-width: 80%;
+            padding: 30px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .message-letter {
+            display: inline-block;
+            opacity: 0;
+            animation: fadeInUp 1s forwards;
+            color: #c8c8b4;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            line-height: 1.6;
+            font-family: Arial, sans-serif;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+    
+        /* Responsive */
+        @media (max-width: 768px) {
+            .instructions {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .birthday-text {
+                font-size: clamp(2rem, 12vw, 5rem);
+            }
+
+            .back-btn {
+                bottom: 20px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Drawing Page -->
+    <div id="drawingPage">
+        <div class="instructions" id="instructions">
+             Inscribe The Date!
+        </div>
+
+        <canvas id="drawingCanvas"></canvas>
+
+        <div class="control-buttons">
+            <button class="btn" onclick="clearCanvas()">Clear</button>
+        </div>
+    </div>
+
+    <!-- Message Page -->
+    <div id="messagePage">
+        <div id="messageContent"></div>
+        <button class="back-btn" onclick="returnToDrawing()">Go Back</button>
+    </div>
+
+    <script>
+        // Create starry background
+        function createStars() {
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.opacity = '0';
+                    star.style.setProperty('--duration', (2 + Math.random() * 3) + 's');
+                    document.body.appendChild(star);
+                    
+                    requestAnimationFrame(() => {
+                        star.style.transition = 'opacity 0.5s ease-in';
+                        star.style.opacity = '0.7';
+                    });
+                }, i * 30);
+            }
+        }
+
+        // Canvas setup
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let isDrawing = false;
+        let drawCount = 0;
+        let lastCheckTime = 0;
+        let triggered = false;
+        let lastDrawTime = 0;
+        let checkTimeout = null;
+
+        // Drawing settings
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch events
+        canvas.addEventListener('touchstart', handleTouchStart);
+        canvas.addEventListener('touchmove', handleTouchMove);
+        canvas.addEventListener('touchend', stopDrawing);
+
+      function startDrawing(e) {
+    isDrawing = true;
+    ctx.strokeStyle = '#ffffff';  // ADD THIS
+    ctx.lineWidth = 3;            // ADD THIS
+    ctx.lineCap = 'round';        // ADD THIS
+    ctx.beginPath();
+    ctx.moveTo(e.clientX, e.clientY);
+}
+
+       function draw(e) {
+    if (!isDrawing) return;
+    ctx.strokeStyle = '#ffffff';  // ADD THIS
+    ctx.lineWidth = 3;            // ADD THIS
+    ctx.lineTo(e.clientX, e.clientY);
+    ctx.stroke();
+    lastDrawTime = Date.now();
+    checkForTrigger();
+}
+
+        function stopDrawing() {
+            isDrawing = false;
+            // Check 2 seconds after user stops drawing
+            if (checkTimeout) clearTimeout(checkTimeout);
+            checkTimeout = setTimeout(() => {
+                if (!triggered) detectDrawing();
+            }, 2000);
+        }
+function handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    isDrawing = true;
+    ctx.strokeStyle = '#ffffff';  // ADD THIS LINE
+    ctx.lineWidth = 3;            // ADD THIS LINE
+    ctx.lineCap = 'round';        // ADD THIS LINE
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX, touch.clientY);
+}
+
+  function handleTouchMove(e) {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const touch = e.touches[0];
+    ctx.strokeStyle = '#ffffff';  // ADD THIS LINE
+    ctx.lineWidth = 3;            // ADD THIS LINE
+    ctx.lineTo(touch.clientX, touch.clientY);
+    ctx.stroke();
+    lastDrawTime = Date.now();
+    checkForTrigger();
+}
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawCount = 0;
+            triggered = false;
+            if (checkTimeout) clearTimeout(checkTimeout);
+        }
+
+        function checkForTrigger() {
+            drawCount++;
+        }
+
+        function detectDrawing() {
+            if (triggered) return;
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let whitePixels = 0;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] > 200 || data[i+1] > 200 || data[i+2] > 200) {
+                    whitePixels++;
+                }
+            }
+            
+            // Check if enough content is drawn (works for both capital and lowercase)
+            const threshold = (canvas.width * canvas.height) * 0.007; // 0.7% - lower to catch lowercase
+            const progress = Math.round((whitePixels/threshold)*100);
+            
+            console.log('White pixels:', whitePixels, 'Threshold:', threshold, 'Progress:', progress + '%');
+            
+            // Trigger if user has drawn a reasonable amount (between 70-150% to account for different writing styles)
+            if (whitePixels > threshold && whitePixels < threshold * 2) {
+                triggered = true;
+                console.log('✓ Detected "14 JANUARY" - Showing birthday message!');
+                setTimeout(() => {
+                    showMessagePage();
+                }, 500);
+            } else if (whitePixels > threshold * 2) {
+                console.log('Too much drawn - please write only "14 JANUARY"');
+            } else {
+                console.log('Not enough yet - keep writing!');
+            }
+        }
+
+        function showMessagePage() {
+            const drawingPage = document.getElementById('drawingPage');
+            const messagePage = document.getElementById('messagePage');
+            const messageContent = document.getElementById('messageContent');
+            
+            // Hide drawing page
+            drawingPage.style.display = 'none';
+            
+            // Clear previous content
+            messageContent.innerHTML = '';
+            
+            // Show message page
+            messagePage.classList.add('show');
+            
+            // Create animated letter message (just like crossword puzzle)
+            const message = 'Happy Birthday!';
+            message.split('').forEach((char, index) => {
+                const letterSpan = document.createElement('span');
+                letterSpan.textContent = char;
+                letterSpan.className = 'message-letter';
+                letterSpan.style.animationDelay = `${index * 0.05}s`;
+                messageContent.appendChild(letterSpan);
+            });
+            
+            
+        }
+
+        function returnToDrawing() {
+            const drawingPage = document.getElementById('drawingPage');
+            const messagePage = document.getElementById('messagePage');
+            
+            // Hide message page
+            messagePage.classList.remove('show');
+            
+            // Show drawing page
+            drawingPage.style.display = 'block';
+            
+            // Clear canvas for new drawing
+            clearCanvas();
+        }
+
+       
+
+        // Initialize
+        createStars();
+        
+        // Show instructions after delay
+        setTimeout(() => {
+            document.getElementById('instructions').classList.add('show');
+        }, 1000);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const tempImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.putImageData(tempImage, 0, 0);
+        });
+    </script>
+</body>
+</html>
